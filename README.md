@@ -1,6 +1,9 @@
 # laravel-docker
 docker service for run laravel in production and development
 
+## which version
+this repo can be use for lravel 9 and php 8.1
+
 ## how to use
 + first install laravel 9 but don't run **sail up**
   - `curl -s "https://laravel.build/example-app" | bash`
