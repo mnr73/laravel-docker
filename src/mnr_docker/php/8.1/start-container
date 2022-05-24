@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+mkdir -p /var/www/.config/psysh
+chmod -R 755 /var/www/.config
+chown -R www-data:www-data /var/www/.config
+
+chmod -R 775 storage/logs
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+apache2-foreground

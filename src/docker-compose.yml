@@ -1,0 +1,96 @@
+version: '3.9'
+
+services:
+  mnr-laravel:
+    container_name: mnr-laravel
+    build: './mnr_docker/php/8.1'
+    image: '${IMAGE_NAME:-mnr-laravel}/laravel:9'
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_APP_PORT:-80}:80'
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - mnr-network
+    depends_on:
+      - mysql
+      - redis
+      - composer
+
+  # node:
+  #   image: node:lts
+  #   restart: unless-stopped
+  #   working_dir: /project
+  #   volumes:
+  #     - '.:/project'
+  #   networks:
+  #     - mnr-network
+  #   command: tail -f /dev/null
+
+  composer:
+    container_name: mnr-composer
+    image: composer
+    restart: unless-stopped
+    working_dir: /project
+    volumes:
+      - '.:/project'
+    command: tail -f /dev/null
+    
+  mysql:
+    container_name: mnr-mysql
+    build: './mnr_docker/mysql'
+    image: '${IMAGE_NAME:-mnr-laravel}/mysql:8.0'
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_DB_PORT:-3360}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    cap_add:
+      - SYS_NICE
+    volumes:
+      - 'mnr-mysql:/var/lib/mysql'
+    networks:
+      - mnr-network
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-p${DB_PASSWORD}']
+      retries: 3
+      timeout: 5s
+
+  redis:
+    container_name: mnr-redis
+    build: './mnr_docker/redis'
+    image: '${IMAGE_NAME:-mnr-laravel}/redis'
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - 'mnr-redis:/data'
+    networks:
+      - mnr-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      retries: 3
+      timeout: 5s
+
+  phpmyadmin:
+    container_name: mnr-phpmyadmin
+    image: phpmyadmin
+    restart: unless-stopped
+    networks:
+      - mnr-network
+    ports:
+      - '${FORWARD_PMA_PORT:-8080}:80'
+    environment:
+      - PMA_HOST=mysql
+
+networks:
+  mnr-network:
+volumes:
+  mnr-mysql:
+    driver: local
+  mnr-redis:
+    driver: local
