@@ -1,0 +1,108 @@
+version: '3.9'
+
+services:
+  mnr-laravel:
+    container_name: '${APP_NAME}-laravel'
+    build: './mnr_docker/php/8.1'
+    image: '${PREFIX_IMAGE_NAME}/laravel'
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_APP_PORT:-80}:80'
+    volumes:
+      - '.:/var/www/html'
+    networks:
+      - mnr-network
+    depends_on:
+      - mysql
+      - redis
+      - composer
+
+  # node:
+  #   image: node:lts
+  #   restart: unless-stopped
+  #   working_dir: /project
+  #   volumes:
+  #     - '.:/project'
+  #   networks:
+  #     - mnr-network
+  #   command: tail -f /dev/null
+
+  composer:
+    container_name: '${APP_NAME}-composer'
+    build: './mnr_docker/composer'
+    image: '${PREFIX_IMAGE_NAME}/composer'
+    restart: unless-stopped
+    working_dir: /project
+    volumes:
+      - '.:/project'
+
+  mysql:
+    container_name: '${APP_NAME}-mysql'
+    build: './mnr_docker/mysql'
+    image: '${PREFIX_IMAGE_NAME}/mysql:8.0'
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_DB_PORT:-3360}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    cap_add:
+      - SYS_NICE
+    volumes:
+      - 'mnr-mysql:/var/lib/mysql'
+      - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+    networks:
+      - mnr-network
+    healthcheck:
+      test: [ 'CMD', 'mysqladmin', 'ping', '-p${DB_PASSWORD}' ]
+      retries: 3
+      timeout: 5s
+    depends_on:
+      - composer
+
+  redis:
+    container_name: '${APP_NAME}-redis'
+    build: './mnr_docker/redis'
+    image: '${PREFIX_IMAGE_NAME}/redis'
+    restart: unless-stopped
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - 'mnr-redis:/data'
+    networks:
+      - mnr-network
+    healthcheck:
+      test: [ 'CMD', 'redis-cli', 'ping' ]
+      retries: 3
+      timeout: 5s
+
+  phpmyadmin:
+    container_name: '${APP_NAME}-phpmyadmin'
+    image: phpmyadmin
+    restart: unless-stopped
+    networks:
+      - mnr-network
+    ports:
+      - '${FORWARD_PMA_PORT:-8080}:80'
+    environment:
+      - PMA_HOST=mysql
+
+  mailhog:
+    container_name: '${APP_NAME}-mailhog'
+    image: 'mailhog/mailhog:latest'
+    ports:
+      - '${FORWARD_MAILHOG_PORT:-1025}:1025'
+      - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
+    networks:
+      - mnr-network
+
+networks:
+  mnr-network:
+volumes:
+  mnr-mysql:
+    driver: local
+  mnr-redis:
+    driver: local
