@@ -37,15 +37,21 @@ LIGHT_CYAN='\033[1;36m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+if [ "${DIR_NAME}" == "_temp-dir" ]; then
+	CD_TEXT="docker compose up"
+else
+	CD_TEXT="cd ${DIR_NAME} && docker compose up"
+fi
+
 if sudo -n true 2>/dev/null; then
     sudo chown -R $USER: .
-    echo -e "${BOLD}Get started with:${NC} cd ${DIR_NAME} && docker compose up"
+    echo -e "${BOLD}Get started with:${NC} ${CD_TEXT}"
 else
     echo -e "${BOLD}Please provide your password so we can make some final adjustments to your application's permissions.${NC}"
     echo ""
     sudo chown -R $USER: .
     echo ""
-    echo -e "${BOLD}Thank you! We hope you build something incredible. Dive in with:${NC} cd ${DIR_NAME} && docker compose up"
+    echo -e "${BOLD}Thank you! We hope you build something incredible. Dive in with:${NC} ${CD_TEXT}"
 fi
 
 shopt -s dotglob
