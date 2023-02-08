@@ -18,6 +18,7 @@ services:
       - composer
 
   # node:
+  #   container_name: '${APP_NAME}-node'
   #   image: node:lts
   #   restart: unless-stopped
   #   working_dir: /project

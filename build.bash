@@ -58,6 +58,6 @@ shopt -s dotglob
 cp -rf files/* $DIR_NAME
 
 if [ "${DIR_NAME}" == "_temp-dir" ]; then
-	mv -rf $DIR_NAME/* .
+	mv $DIR_NAME/* .
 	rm -d $DIR_NAME
 fi
