@@ -10,6 +10,8 @@ Clone this repo and run.
 
 `bash build.bash [directory-name | .]`
 
+**Note dont use sudo for this command**
+
 use . for current directory. if use dot ensure that current directory is empty
 
 and then go to root directory and run `docker compose up`
