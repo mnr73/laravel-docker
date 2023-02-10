@@ -34,6 +34,11 @@ services:
     image: '${PREFIX_IMAGE_NAME}/composer'
     restart: unless-stopped
     working_dir: /project
+    healthcheck:
+      test: bash -c "[ -f ./vendor/laravel/sail/database/mysql/create-testing-database.sh ]"
+      interval: 10s
+      retries: 60
+      timeout: 10s
     volumes:
       - '.:/project'
 
@@ -62,7 +67,8 @@ services:
       retries: 3
       timeout: 5s
     depends_on:
-      - composer
+      composer:
+        condition: service_healthy
 
   redis:
     container_name: '${APP_NAME}-redis'
