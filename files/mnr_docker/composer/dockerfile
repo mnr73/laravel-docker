@@ -11,6 +11,6 @@ RUN chmod +x /usr/local/bin/start-container
 RUN addgroup -S $USERNAME -g $GID
 RUN adduser -S $USERNAME -G $USERNAME -u $UID
 
-USER 1000
+USER $USERNAME
 
 ENTRYPOINT ["start-container"]
