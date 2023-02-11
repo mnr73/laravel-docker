@@ -18,8 +18,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 RUN pecl install redis-5.3.4 && docker-php-ext-enable redis
 
 # install and enable mysqli db requirements
-RUN docker-php-ext-install mysqli pdo pdo_mysql 
-RUN docker-php-ext-enable mysqli pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo pdo_mysql gd
+RUN docker-php-ext-enable mysqli pdo pdo_mysql gd
 
 # you can add other package like trader
 # RUN pecl install trader && docker-php-ext-enable trader
