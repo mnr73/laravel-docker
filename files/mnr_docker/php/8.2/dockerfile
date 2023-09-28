@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
 
 ENV TZ=UTC
@@ -29,13 +29,16 @@ RUN a2enmod rewrite
 RUN usermod -u $WWWUSER $USERNAME
 RUN groupmod -g $WWWGROUP $USERNAME
 
-# copy files
-COPY php.ini $PHP_INI_DIR
-COPY 000-default.conf /etc/apache2/sites-available
+
+
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY scheduler /etc/cron.d/scheduler
+COPY 000-default.conf /etc/apache2/sites-available
+
+# scheduler
+RUN echo "* * * * * www-data /usr/local/bin/php /var/www/html/artisan schedule:run >> /dev/null 2>&1" > /etc/cron.d/scheduler
 RUN chmod 0644 /etc/cron.d/scheduler \
 	&& crontab /etc/cron.d/scheduler
+
 COPY start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 

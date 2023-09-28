@@ -2,5 +2,8 @@ FROM redis
 
 # ENTRYPOINT redis-cli config set stop-writes-on-bgsave-error no
 
-COPY redis.conf /usr/local/etc/redis/redis.conf
+RUN mkdir /usr/local/etc/redis
+RUN echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf
+RUN echo "stop-writes-on-bgsave-error no" >> /usr/local/etc/redis/redis.conf
+
 CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]

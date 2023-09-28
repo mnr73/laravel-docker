@@ -5,7 +5,10 @@ ENV GID 1000
 ENV UID 1000
 ENV USERNAME mnr
 
-COPY start-container /usr/local/bin/start-container
+RUN echo "#!/usr/bin/env bash" > /usr/local/bin/start-container
+RUN echo "composer install" >> /usr/local/bin/start-container
+RUN echo "composer update" >> /usr/local/bin/start-container
+RUN echo "tail -f /dev/null" >> /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 RUN addgroup -S $USERNAME -g $GID

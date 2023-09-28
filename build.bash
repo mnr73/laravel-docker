@@ -19,10 +19,10 @@ if [ "${DIR_NAME}" == "." ]; then
 	DIR_NAME="_temp-dir"
 fi
 
-if [ "${2}" == "php81" ]; then
-	PHP_VER="php81"
+if [ "${2}" == "php82" ]; then
+	PHP_VER="php82"
 else
-	PHP_VER="php81"
+	PHP_VER="php82"
 fi
 
 docker run --rm \
