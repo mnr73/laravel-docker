@@ -60,4 +60,6 @@ cp -rf files/* $DIR_NAME
 if [ "${DIR_NAME}" == "_temp-dir" ]; then
 	mv $DIR_NAME/* .
 	rm -d $DIR_NAME
+	rm -dR "files"
+	rm "build.bash"
 fi
