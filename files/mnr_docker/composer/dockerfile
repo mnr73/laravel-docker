@@ -7,7 +7,6 @@ ENV USERNAME mnr
 
 RUN echo "#!/usr/bin/env bash" > /usr/local/bin/start-container
 RUN echo "composer install" >> /usr/local/bin/start-container
-RUN echo "composer update" >> /usr/local/bin/start-container
 RUN echo "tail -f /dev/null" >> /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
