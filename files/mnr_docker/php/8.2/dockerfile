@@ -39,7 +39,10 @@ RUN echo "* * * * * www-data /usr/local/bin/php /var/www/html/artisan schedule:r
 RUN chmod 0644 /etc/cron.d/scheduler \
 	&& crontab /etc/cron.d/scheduler
 
-COPY start-container /usr/local/bin/start-container
+RUN echo "#!/usr/bin/env bash" > /usr/local/bin/start-container
+RUN echo "chmod -R 775 storage/logs" >> /usr/local/bin/start-container
+RUN echo "/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf" >> /usr/local/bin/start-container
+RUN echo "apache2-foreground" >> /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 RUN mkdir -p /var/www/.config/psysh
